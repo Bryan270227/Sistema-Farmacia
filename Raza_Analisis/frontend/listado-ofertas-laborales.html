@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listado de Ofertas Laborales - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Listado de Ofertas Laborales</h2>
+    <p>Aquí puedes ver todas las ofertas laborales disponibles.</p>
+
+    <!-- Tabla de ofertas laborales -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Requisitos</th>
+          <th>Fecha de Publicación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="ofertas-body">
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+  </main>
+
+  <!-- Modal para editar -->
+  <div id="modal-editar" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h3>Editar Oferta Laboral</h3>
+      <form id="formulario-editar">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required />
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+
+        <label for="requisitos">Requisitos:</label>
+        <textarea id="requisitos" name="requisitos" rows="4"></textarea>
+
+        <button type="submit" class="btn-primary">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let ofertaIdActual = null; // Para almacenar el ID de la oferta a editar
+
+    // Función para cerrar sesión
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    // Obtener y mostrar ofertas desde el backend
+    async function cargarOfertas() {
+      try {
+        const response = await fetch("http://localhost:5000/api/ofertas");
+        const data = await response.json();
+
+        const tbody = document.getElementById("ofertas-body");
+        tbody.innerHTML = "";
+
+        data.ofertas.forEach(oferta => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${oferta.titulo}</td>
+            <td>${oferta.descripcion}</td>
+            <td>${oferta.requisitos || "—"}</td>
+            <td>${oferta.fecha_publicacion || "—"}</td>
+            <td>
+              <button class="btn-edit" onclick="abrirModalEditar(${oferta.id}, '${oferta.titulo}', '${oferta.descripcion}', '${oferta.requisitos}')">Editar</button>
+              <button class="btn-delete" onclick="eliminarOferta(${oferta.id})">Eliminar</button>
+            </td>
+          `;
+
+          tbody.appendChild(row);
+        });
+
+      } catch (error) {
+        console.error("Error al cargar ofertas:", error);
+      }
+    }
+
+    // Abrir modal de edición
+    function abrirModalEditar(id, titulo, descripcion, requisitos) {
+      ofertaIdActual = id;
+      document.getElementById("titulo").value = titulo;
+      document.getElementById("descripcion").value = descripcion;
+      document.getElementById("requisitos").value = requisitos;
+      document.getElementById("modal-editar").style.display = "flex";
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+      document.getElementById("modal-editar").style.display = "none";
+    }
+
+    // Manejar envío del formulario de edición
+    document.getElementById("formulario-editar").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const titulo = document.getElementById("titulo").value;
+      const descripcion = document.getElementById("descripcion").value;
+      const requisitos = document.getElementById("requisitos").value;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/ofertas/${ofertaIdActual}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ titulo, descripcion, requisitos }),
+        });
+
+        if (response.ok) {
+          alert("Oferta actualizada exitosamente.");
+          cerrarModal();
+          cargarOfertas();
+        } else {
+          alert("Error al actualizar la oferta.");
+        }
+      } catch (error) {
+        console.error("Error al actualizar la oferta:", error);
+      }
+    });
+
+    // Eliminar oferta
+    function eliminarOferta(id) {
+      if (confirm("¿Seguro que deseas eliminar esta oferta?")) {
+        fetch(`http://localhost:5000/api/ofertas/${id}`, {
+          method: "DELETE",
+        })
+          .then(res => {
+            if (res.ok) {
+              alert("Oferta eliminada.");
+              cargarOfertas();
+            } else {
+              alert("Error al eliminar.");
+            }
+          })
+          .catch(error => {
+            console.error("Error al eliminar:", error);
+          });
+      }
+    }
+
+    // Cargar ofertas al iniciar
+    cargarOfertas();
+  </script>
+</body>
+</html>

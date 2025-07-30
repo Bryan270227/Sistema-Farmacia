@@ -1,0 +1,157 @@
+/* ====== RESET GENERAL ====== */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f1f5fb;
+  color: #333;
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.content,
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* ====== TÍTULOS ====== */
+h2 {
+  text-align: center;
+  color: #1f2d3d;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+/* ====== MENSAJE ====== */
+#mensaje,
+.no-postulaciones {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* ====== CONTENEDOR DE TARJETAS (galería) ====== */
+.card-container,
+#postulaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
+
+/* ====== TARJETA ====== */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 300px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.5s ease both;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  color: #3b5bdb;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 6px 0;
+}
+
+.card p.fecha {
+  font-style: italic;
+  color: #888;
+}
+
+/* ====== BOTÓN DE ACCIÓN ====== */
+.card button {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 12px;
+  align-self: flex-start;
+  transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+  background-color: #c53030;
+}
+
+/* ====== SPINNER (CARGA) ====== */
+.spinner {
+  border: 5px solid #eee;
+  border-top: 5px solid #3b5bdb;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+  margin: 40px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====== ANIMACIONES ====== */
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.card.removed {
+  animation: fadeOutUp 0.4s ease forwards;
+}
+
+/* ====== RESPONSIVO ====== */
+@media (max-width: 600px) {
+  .content, .container {
+    padding: 15px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}

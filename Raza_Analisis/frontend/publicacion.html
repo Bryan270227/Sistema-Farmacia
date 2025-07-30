@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ofertas Laborales - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/modulo.css" />
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="main.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="main.html">Inicio</a></li>
+        <li><a href="capacitaciones.html">Capacitaciones</a></li>
+        <li><a href="publicacion.html" class="active">Oferta Laboral</a></li>
+        <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Ofertas Laborales Disponibles</h2>
+    <p>Explora las vacantes actuales para unirte a nuestro equipo en Farmacia Santa Martha.</p>
+
+    <div id="galeria-ofertas" class="galeria">
+      <!-- Ofertas laborales se insertarán aquí -->
+    </div>
+  </main>
+
+  <!-- Cargar ofertas -->
+  <script>
+    async function loadJobOffers() {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/ofertas");
+        const json = await res.json();
+        const ofertas = json.ofertas || [];
+
+        const galeria = document.getElementById("galeria-ofertas");
+        galeria.innerHTML = "";
+
+        if (ofertas.length === 0) {
+          galeria.innerHTML = "<p class='no-ofertas'>No hay ofertas laborales disponibles en este momento.</p>";
+          return;
+        }
+
+        ofertas.forEach(oferta => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${oferta.titulo}</h3>
+            <p>${oferta.descripcion}</p>
+            <button class="btn-postular" onclick="postular(${oferta.id})">Postularse</button>
+          `;
+          galeria.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        const galeria = document.getElementById("galeria-ofertas");
+        galeria.innerHTML = "<p class='no-ofertas'>❌ No se pudieron cargar las ofertas laborales.</p>";
+      }
+    }
+
+    async function postular(idOferta) {
+      const token = localStorage.getItem("token");
+
+      const isInIframe = window !== window.parent;
+      const isAuthenticated = !!token;
+
+      if (!isInIframe || !isAuthenticated) {
+        alert("⚠️ Solo puedes postularte desde el Panel de Usuario con sesión iniciada.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/ofertas/postular", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ idOferta })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("✅ Postulación realizada con éxito.");
+        } else {
+          alert(`❌ ${data.error || "No se pudo realizar la postulación."}`);
+        }
+
+      } catch (error) {
+        alert("❌ Error de red al intentar postular.");
+      }
+    }
+
+    window.onload = loadJobOffers;
+  </script>
+
+  <!-- Ocultar navbar si está en iframe -->
+  <script>
+    if (window !== window.parent) {
+      document.querySelector(".navbar").style.display = "none";
+      document.querySelector("main").style.marginTop = "20px";
+    }
+  </script>
+</body>
+</html>

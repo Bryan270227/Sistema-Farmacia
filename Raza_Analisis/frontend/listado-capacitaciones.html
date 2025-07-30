@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listado de Capacitaciones - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Listado de Capacitaciones</h2>
+    <p>Aquí puedes ver todos los programas de capacitación disponibles.</p>
+
+    <!-- Tabla de capacitaciones -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre del Programa</th>
+          <th>Descripción</th>
+          <th>Instructor</th>
+          <th>Cupos Máximos</th>
+          <th>Fecha de Inicio</th>
+          <th>Duración (horas)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="course-table-body"></tbody>
+    </table>
+  </main>
+
+  <!-- Modal de edición -->
+  <div id="modal-editar-capacitacion" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalEdicion()">&times;</span>
+      <h3>Editar Capacitación</h3>
+
+      <form id="form-editar-capacitacion">
+        <input type="hidden" id="edit-id" />
+
+        <label for="edit-titulo">Título:</label>
+        <input type="text" id="edit-titulo" required />
+
+        <label for="edit-descripcion">Descripción:</label>
+        <textarea id="edit-descripcion" rows="3" required></textarea>
+
+        <label for="edit-fecha-inicio">Fecha de Inicio:</label>
+        <input type="date" id="edit-fecha-inicio" required />
+
+        <label for="edit-fecha-fin">Fecha de Fin:</label>
+        <input type="date" id="edit-fecha-fin" required />
+
+        <label for="edit-instructor">Instructor:</label>
+        <input type="text" id="edit-instructor" required />
+
+        <label for="edit-cupo">Cupo Máximo:</label>
+        <input type="number" id="edit-cupo" min="1" required />
+
+        <label for="edit-duracion">Duración (horas):</label>
+        <input type="number" id="edit-duracion" min="1" required />
+
+        <button type="submit" class="btn-primary">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+
+  async function loadCourses() {
+    try {
+      const response = await fetch("http://localhost:5000/api/cursos");
+      if (!response.ok) throw new Error("Error al cargar las capacitaciones");
+
+      const data = await response.json();
+      const tbody = document.getElementById("course-table-body");
+      tbody.innerHTML = "";
+
+      if (!data.cursos || data.cursos.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7'>No hay capacitaciones disponibles.</td></tr>";
+        return;
+      }
+
+      data.cursos.forEach((curso) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${curso.titulo}</td>
+          <td>${curso.descripcion}</td>
+          <td>${curso.instructor}</td>
+          <td>${curso.cupo_maximo}</td>
+          <td>${curso.fecha_inicio}</td>
+          <td>${curso.duracion_horas}</td>
+          <td>
+            <button class="btn-edit" onclick="editCapacitation(${curso.id})">Editar</button>
+            <button class="btn-delete" onclick="deleteCapacitation(${curso.id})">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Error al cargar capacitaciones:", error.message);
+      const tbody = document.getElementById("course-table-body");
+      tbody.innerHTML = `<tr><td colspan='7' style="color:red;">Error: ${error.message}</td></tr>`;
+    }
+  }
+
+  async function editCapacitation(id) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cursos/${id}`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error desconocido");
+      }
+
+      const curso = await response.json();
+
+      // Rellenar campos del formulario
+      document.getElementById("edit-id").value = curso.id;
+      document.getElementById("edit-titulo").value = curso.titulo;
+      document.getElementById("edit-descripcion").value = curso.descripcion;
+      document.getElementById("edit-fecha-inicio").value = curso.fecha_inicio;
+      document.getElementById("edit-fecha-fin").value = curso.fecha_fin;
+      document.getElementById("edit-instructor").value = curso.instructor;
+      document.getElementById("edit-cupo").value = curso.cupo_maximo;
+      document.getElementById("edit-duracion").value = curso.duracion_horas;
+
+      // Mostrar modal
+      document.getElementById("modal-editar-capacitacion").style.display = "block";
+    } catch (error) {
+      alert("Error al cargar los datos para editar: " + error.message);
+    }
+  }
+
+  function cerrarModalEdicion() {
+    document.getElementById("modal-editar-capacitacion").style.display = "none";
+  }
+
+  document.getElementById("form-editar-capacitacion").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const id = document.getElementById("edit-id").value;
+    const data = {
+      titulo: document.getElementById("edit-titulo").value,
+      descripcion: document.getElementById("edit-descripcion").value,
+      fecha_inicio: document.getElementById("edit-fecha-inicio").value,
+      fecha_fin: document.getElementById("edit-fecha-fin").value,
+      instructor: document.getElementById("edit-instructor").value,
+      cupo_maximo: parseInt(document.getElementById("edit-cupo").value),
+      duracion_horas: parseInt(document.getElementById("edit-duracion").value),
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/cursos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+
+      alert("Capacitación actualizada correctamente.");
+      cerrarModalEdicion();
+      loadCourses(); // recargar tabla
+    } catch (error) {
+      alert("Error al guardar: " + error.message);
+    }
+  });
+
+  async function deleteCapacitation(id) {
+    if (!confirm("¿Estás seguro de que deseas eliminar esta capacitación?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/cursos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+
+      alert("Capacitación eliminada correctamente.");
+      loadCourses(); // recargar tabla
+    } catch (error) {
+      alert("Error al eliminar: " + error.message);
+    }
+  }
+
+  window.onload = loadCourses;
+</script>
+
+</body>
+</html>

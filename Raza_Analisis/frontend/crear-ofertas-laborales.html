@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Ofertas Laborales - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Crear Nueva Oferta Laboral</h2>
+    <p>Completa el formulario para crear una nueva oferta laboral.</p>
+
+    <!-- Formulario -->
+    <form id="create-offer-form" class="login-form">
+      <div class="input-group">
+        <label for="offer-title">Título de la Oferta</label>
+        <input 
+          id="offer-title" 
+          type="text" 
+          required 
+          placeholder="Ej: Asistente de Farmacia" 
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="offer-description">Descripción</label>
+        <textarea 
+          id="offer-description" 
+          rows="4" 
+          required 
+          placeholder="Detalles sobre la oferta..."
+        ></textarea>
+      </div>
+
+      <div class="input-group">
+        <label for="offer-requirements">Requisitos</label>
+        <textarea 
+          id="offer-requirements" 
+          rows="3" 
+          required
+          placeholder="Ej: Experiencia previa, título técnico..."
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary">Crear Oferta</button>
+    </form>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    // Enviar la oferta al backend
+    document.getElementById("create-offer-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        titulo: document.getElementById("offer-title").value.trim(),
+        descripcion: document.getElementById("offer-description").value.trim(),
+        requisitos: document.getElementById("offer-requirements").value.trim()
+      };
+
+      if (!data.titulo || !data.descripcion || !data.requisitos) {
+        alert("⚠️ Todos los campos son obligatorios.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/ofertas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          const mensaje = result?.error || "Error desconocido";
+          throw new Error(mensaje);
+        }
+
+        alert("✅ Oferta laboral creada exitosamente");
+        this.reset();
+      } catch (err) {
+        alert("❌ Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

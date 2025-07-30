@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Postulantes a Ofertas Laborales - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Postulantes a Ofertas Laborales</h2>
+    <p>Aquí puedes ver los usuarios que han postulado a las ofertas laborales.</p>
+
+    <!-- Tabla de postulantes -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre del Usuario</th>
+          <th>Correo Electrónico</th>
+          <th>Oferta Laboral</th>
+          <th>Fecha de Postulación</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-postulantes">
+        <tr>
+            <td colspan="4">Cargando postulaciones...</td>
+        </tr>
+      </tbody>
+
+            <!-- Aquí se cargarán dinámicamente -->
+    </table>
+  </main>
+
+<script>
+  async function cargarPostulantes() {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/ofertas/postulantes");
+      const datos = await response.json();
+      const tbody = document.getElementById("tabla-postulantes");
+      tbody.innerHTML = "";
+
+      if (datos.length === 0) {
+        const fila = document.createElement("tr");
+        fila.innerHTML = "<td colspan='4'>No hay postulaciones registradas.</td>";
+        tbody.appendChild(fila);
+        return;
+      }
+
+      datos.forEach(p => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${p.nombre_usuario}</td>
+          <td>${p.correo}</td>
+          <td>${p.oferta}</td>
+          <td>${p.fecha}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+    } catch (err) {
+      const tbody = document.getElementById("tabla-postulantes");
+      tbody.innerHTML = "<tr><td colspan='4'>Error al cargar datos.</td></tr>";
+    }
+  }
+
+  // Ejecutar al cargar la página
+  window.onload = cargarPostulantes;
+</script>
+
+</body>
+</html>

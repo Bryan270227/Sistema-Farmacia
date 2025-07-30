@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel del Usuario</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/user.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_user.html" class="logo"><i class="fas fa-user"></i> Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="main.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container">
+    <h2>Panel de Usuario</h2>
+    <p class="intro">Gestiona tus capacitaciones y postulaciones desde un solo lugar.</p>
+
+    <div class="cards-grid">
+
+      <!-- Capacitaciones -->
+      <div class="card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Capacitaciones</h3>
+        <p>Consulta las capacitaciones disponibles o revisa a cuáles te has inscrito.</p>
+        <button onclick="abrirModal('capacitaciones.html')">Ver Capacitaciones</button>
+        <button onclick="window.location.href='mis-inscripciones.html'">Mis Inscripciones</button>
+      </div>
+
+      <!-- Ofertas Laborales -->
+      <div class="card">
+        <i class="fas fa-briefcase"></i>
+        <h3>Ofertas Laborales</h3>
+        <p>Postúlate a oportunidades laborales o revisa tus postulaciones existentes.</p>
+        <button onclick="abrirModal('publicacion.html')">Ver Ofertas</button>
+        <button onclick="window.location.href='mis-postulaciones.html'">Mis Postulaciones</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal flotante -->
+  <div id="modalFlotante" class="modal">
+    <div class="modal-content">
+      <div class="close" onclick="cerrarModal()">✖ Cerrar</div>
+      <iframe id="iframeContenido" src=""></iframe>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    function abrirModal(url) {
+      document.getElementById("iframeContenido").src = url;
+      document.getElementById("modalFlotante").style.display = "block";
+    }
+
+    function cerrarModal() {
+      document.getElementById("modalFlotante").style.display = "none";
+      document.getElementById("iframeContenido").src = "";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalFlotante");
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    };
+  </script>
+</body>
+</html>

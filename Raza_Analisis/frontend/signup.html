@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Usuario - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/signup.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+</head>
+<body>
+
+  <div class="signup-container">
+    <h2><i class="fas fa-user-plus"></i>Crear Cuenta</h2>
+    <form id="signup-form" novalidate>
+      
+      <div class="input-group">
+        <i class="fas fa-user icon-left"></i>
+        <input type="text" id="username" name="username" placeholder="Usuario" required />
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-envelope icon-left"></i>
+        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required />
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock icon-left"></i>
+        <input type="password" id="password" name="password" placeholder="Contraseña" required />
+        <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock icon-left"></i>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmar Contraseña" required />
+        <i class="fas fa-eye toggle-password" onclick="togglePassword('confirm-password', this)"></i>
+      </div>
+
+      <button id="register-btn" type="submit">Registrarse</button>
+
+      <div id="signup-error" class="error-message" style="display:none;"></div>
+      <div id="signup-success" class="success-message" style="display:none;"></div>
+    </form>
+
+    <a class="login-link" href="login.html">¿Ya tienes cuenta? Inicia sesión</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("signup-form");
+    const errorBox = document.getElementById("signup-error");
+    const successBox = document.getElementById("signup-success");
+    const btn = document.getElementById("register-btn");
+
+    function togglePassword(fieldId, icon) {
+      const field = document.getElementById(fieldId);
+      const isVisible = field.type === "text";
+      field.type = isVisible ? "password" : "text";
+      icon.classList.toggle("fa-eye");
+      icon.classList.toggle("fa-eye-slash");
+    }
+
+    function validarCorreo(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function mostrarMensajeError(mensaje) {
+      errorBox.textContent = mensaje;
+      errorBox.style.display = "block";
+      successBox.style.display = "none";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+
+      if (!username || !email || !password || !confirmPassword) {
+        mostrarMensajeError("❌ Todos los campos son obligatorios.");
+        return;
+      }
+
+      if (!validarCorreo(email)) {
+        mostrarMensajeError("❌ Ingresa un correo electrónico válido.");
+        return;
+      }
+
+      if (password.length < 6) {
+        mostrarMensajeError("❌ La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        mostrarMensajeError("❌ Las contraseñas no coinciden.");
+        return;
+      }
+
+      // Animación de loading
+      btn.disabled = true;
+      btn.textContent = "Registrando...";
+
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password, confirm_password: confirmPassword }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          mostrarMensajeError(data.error || "❌ Error al registrar el usuario.");
+        } else {
+          successBox.textContent = "✅ ¡Registro exitoso! Ahora puedes iniciar sesión.";
+          successBox.style.display = "block";
+          form.reset();
+        }
+      } catch (err) {
+        mostrarMensajeError("❌ Error de red o servidor.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Registrarse";
+      }
+    });
+  </script>
+</body>
+</html>

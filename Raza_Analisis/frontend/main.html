@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation">
+    <div class="navbar-container">
+      <h1 class="logo">Farmacia Santa Martha</h1>
+      <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#capacitaciones">Capacitaciones</a></li>
+        <li><a href="#publicar">Ofertas</a></li>
+        <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+
+    <section id="inicio" class="section" role="region" aria-labelledby="inicio-heading">
+      <i class="fas fa-heartbeat"></i>
+      <h2 id="inicio-heading">Bienvenido a Farmacia Santa Martha</h2>
+      <p>
+        Somos una farmacia comprometida con la salud y el bienestar de nuestros clientes. Aquí encontrarás productos de alta calidad y servicios personalizados para satisfacer tus necesidades.
+      </p>
+    </section>
+
+    <section id="capacitaciones" class="section" role="region" aria-labelledby="capacitaciones-heading">
+      <i class="fas fa-chalkboard-teacher"></i>
+      <h2 id="capacitaciones-heading">Capacitaciones</h2>
+      <p>
+        Ofrecemos programas de capacitación para empleados y profesionales de la salud. Nuestros cursos están diseñados para mejorar habilidades y garantizar un servicio de calidad.
+      </p>
+      <button class="btn-primary" onclick="window.location.href='capacitaciones.html'">
+        Ver Capacitaciones
+      </button>
+    </section>
+
+    <section id="publicar" class="section" role="region" aria-labelledby="ofertas-heading">
+      <i class="fas fa-briefcase"></i>
+      <h2 id="ofertas-heading">Ofertas Laborales</h2>
+      <p>
+        Publica ofertas laborales para encontrar talento calificado. Únete a nuestra red de empresas y profesionales.
+      </p>
+      <button class="btn-primary" onclick="window.location.href='publicacion.html'">
+        Ver Ofertas Laborales
+      </button>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Farmacia Santa Martha. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Scroll suave -->
+  <script>
+    document.querySelectorAll('.nav-links a').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href.startsWith("#")) {
+          e.preventDefault();
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 60,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

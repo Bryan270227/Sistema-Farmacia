@@ -1,0 +1,117 @@
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #dbeafe, #ffffff);
+      margin: 0;
+      padding: 0;
+    }
+
+    .signup-container {
+      max-width: 420px;
+      margin: 60px auto;
+      background-color: #fff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #3b5bdb;
+      margin-bottom: 20px;
+    }
+
+    h2 i {
+      margin-right: 8px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 40px 10px 36px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 0.95rem;
+    }
+
+    .input-group .icon-left {
+      left: 12px;
+    }
+
+    .input-group .toggle-password {
+      right: 12px;
+      cursor: pointer;
+    }
+
+    .input-group input:focus {
+      border-color: #3b5bdb;
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #3b5bdb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, opacity 0.3s;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error-message,
+    .success-message {
+      font-size: 0.9rem;
+      padding-top: 5px;
+      text-align: center;
+    }
+
+    .error-message {
+      color: red;
+    }
+
+    .success-message {
+      color: green;
+    }
+
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #3b5bdb;
+      text-decoration: none;
+    }
+
+    .login-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .signup-container {
+        margin: 20px;
+        padding: 25px;
+      }
+    }

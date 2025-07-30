@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capacitaciones - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/capacitacion.css" />
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="main.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="main.html">Inicio</a></li>
+        <li><a href="capacitaciones.html" class="active">Capacitaciones</a></li>
+        <li><a href="publicacion.html">Oferta Laboral</a></li>
+        <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <h2>Programas de Capacitación</h2>
+    <p style="text-align: center;">Cursos y talleres disponibles para el personal de Farmacia Santa Martha.</p>
+
+    <div class="cursos-grid" id="cursos-container">
+      <!-- Cursos dinámicos -->
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="inscripcionModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h3 style="color:#3b5bdb;">Formulario de Inscripción</h3>
+      <label>Nombre completo</label>
+      <input type="text" id="nombre" required />
+      <label>Correo electrónico</label>
+      <input type="email" id="correo" required />
+      <button id="enviarBtn">Enviar inscripción</button>
+      <div id="mensaje"></div>
+    </div>
+  </div>
+
+  <script>
+    let cursoSeleccionado = null;
+
+    async function cargarCursos() {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/cursos");
+        const data = await res.json();
+        const container = document.getElementById("cursos-container");
+        container.innerHTML = "";
+
+        data.cursos.forEach(curso => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${curso.titulo}</h3>
+            <p><strong>Descripción:</strong> ${curso.descripcion}</p>
+            <p><strong>Duración:</strong> ${curso.duracion_horas} horas</p>
+            <button class="btn-inscribirse" onclick="inscribirse(${curso.id})">Inscribirme</button>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error al cargar cursos:", err);
+      }
+    }
+
+    async function inscribirse(cursoId) {
+      const token = localStorage.getItem("token");
+
+      const isFromDashboard = window !== window.parent; // Solo si está dentro de iframe
+      const isAuthorized = !!token;
+
+      if (!isFromDashboard || !isAuthorized) {
+        alert("⚠️ Solo puedes inscribirte desde el panel de usuario con sesión activa.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/inscripciones", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ curso_id: cursoId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("✅ Inscripción realizada con éxito.");
+        } else {
+          alert(`❌ ${data.error || "No se pudo completar la inscripción."}`);
+        }
+
+      } catch (error) {
+        console.error("Error en inscripción:", error);
+        alert("❌ Error de red.");
+      }
+    }
+
+    window.onload = cargarCursos;
+  </script>
+
+  <script>
+  // Ocultar elementos si se está en un iframe
+  if (window !== window.parent) {
+    // Oculta la navbar
+    const navbar = document.querySelector(".navbar");
+    if (navbar) navbar.style.display = "none";
+
+    // Puedes ajustar márgenes si quieres más espacio arriba
+    const main = document.querySelector("main");
+    if (main) main.style.marginTop = "0";
+  }
+</script>
+
+
+</body>
+</html>

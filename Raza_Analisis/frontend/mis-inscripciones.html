@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Inscripciones</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/mis.css" />
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_user.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_user.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()">Cerrar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <h2>Mis Inscripciones a Capacitaciones</h2>
+    <div id="mensaje"></div>
+    <div id="loader" class="spinner"></div>
+    <div id="lista-inscripciones" class="card-container"></div>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    async function cargarInscripciones() {
+      const token = localStorage.getItem("token");
+      const mensaje = document.getElementById("mensaje");
+      const contenedor = document.getElementById("lista-inscripciones");
+      const loader = document.getElementById("loader");
+
+      mensaje.textContent = "";
+      contenedor.innerHTML = "";
+
+      if (!token) {
+        loader.style.display = "none";
+        mensaje.style.color = "red";
+        mensaje.textContent = "⚠️ Debes iniciar sesión para ver tus inscripciones.";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/inscripciones/usuario", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        loader.style.display = "none";
+
+        if (!response.ok) {
+          mensaje.style.color = "red";
+          mensaje.textContent = data.error || "❌ Error al cargar las inscripciones.";
+          return;
+        }
+
+        if (data.length === 0) {
+          mensaje.style.color = "#666";
+          mensaje.textContent = "ℹ️ No estás inscrito en ninguna capacitación aún.";
+          return;
+        }
+
+        mensaje.textContent = "";
+        data.forEach(inscripcion => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${inscripcion.titulo}</h3>
+            <p><strong>Descripción:</strong> ${inscripcion.descripcion}</p>
+            <p><strong>Fecha de inicio:</strong> ${inscripcion.fecha_inicio}</p>
+            <p><strong>Fecha de fin:</strong> ${inscripcion.fecha_fin}</p>
+            <p><strong>Inscrito el:</strong> ${inscripcion.fecha_inscripcion}</p>
+          `;
+          contenedor.appendChild(card);
+        });
+
+      } catch (err) {
+        loader.style.display = "none";
+        mensaje.style.color = "red";
+        mensaje.textContent = "❌ Error de red al intentar obtener los datos.";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", cargarInscripciones);
+  </script>
+</body>
+</html>

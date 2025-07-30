@@ -1,0 +1,164 @@
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      color: #333;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, #3b5bdb, #4f74ff);
+      padding: 15px 0;
+      color: white;
+    }
+
+    .navbar-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #dfe6ff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #2d3e50;
+    }
+
+    p.intro {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+      padding: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .card i {
+      font-size: 2.2rem;
+      color: #3b5bdb;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: #333;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #666;
+      margin: 10px 0 20px;
+    }
+
+    .card button {
+      background-color: #3b5bdb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .card button:hover {
+      background-color: #2f4db8;
+    }
+
+    /* Modal flotante */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 60px auto;
+      padding: 0;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 1000px;
+      height: 85%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+
+    .close {
+      background: #3b5bdb;
+      color: white;
+      padding: 10px;
+      text-align: right;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      background: #2d45b2;
+    }

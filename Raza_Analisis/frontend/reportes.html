@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/reportes.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido Principal -->
+  <main class="container">
+    <h2 class="title">📊 Reportes Disponibles</h2>
+    <p class="subtitle">Selecciona el tipo de reporte que deseas descargar:</p>
+    <div class="buttons-container">
+      <button class="btn btn-primary" onclick="descargarReporte('inscripciones')">
+        📋 Reporte de Inscripciones
+      </button>
+      <button class="btn btn-secondary" onclick="descargarReporte('postulaciones')">
+        ✍️ Reporte de Postulaciones
+      </button>
+    </div>
+  </main>
+
+  <script>
+    function descargarReporte(tipo) {
+      const url = `http://127.0.0.1:5000/api/reportes/${tipo}`;
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error al descargar el reporte (${response.status})`);
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `reporte_${tipo}.csv`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch(error => {
+          alert(`No se pudo descargar el reporte: ${error.message}`);
+        });
+    }
+
+    function logout() {
+      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        window.location.href = "login.html";
+      }
+    }
+  </script>
+</body>
+</html>

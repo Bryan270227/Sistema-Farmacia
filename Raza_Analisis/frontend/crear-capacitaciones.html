@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Capacitaciones - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Crear Nueva Capacitación</h2>
+    <p>Completa el formulario para crear un nuevo programa de capacitación.</p>
+
+    <!-- Formulario -->
+     <form id="create-capacitation-form" class="login-form">
+  <div class="input-group">
+    <label for="program-name">Nombre del Programa</label>
+    <input 
+      id="program-name" 
+      type="text" 
+      required 
+      placeholder="Ej: Manejo de Inventario" 
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="program-description">Descripción</label>
+    <textarea 
+      id="program-description" 
+      rows="4" 
+      required 
+      placeholder="Detalles sobre el programa..."
+    ></textarea>
+  </div>
+
+  <div class="input-group">
+    <label for="program-date-start">Fecha de Inicio</label>
+    <input 
+      id="program-date-start" 
+      type="date" 
+      required 
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="program-date-end">Fecha de Finalización</label>
+    <input 
+      id="program-date-end" 
+      type="date" 
+      required 
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="program-instructor">Instructor</label>
+    <input 
+      id="program-instructor" 
+      type="text" 
+      required 
+      placeholder="Nombre del instructor" 
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="program-capacity">Cupo Máximo</label>
+    <input 
+      id="program-capacity" 
+      type="number" 
+      min="1" 
+      required 
+      placeholder="Ej: 30" 
+    />
+  </div>
+
+  <div class="input-group">
+    <label for="program-duration">Duración (en horas)</label>
+    <input 
+      id="program-duration" 
+      type="number" 
+      min="1" 
+      required 
+      placeholder="Ej: 20 horas"
+    />
+  </div>
+
+  <button type="submit" class="btn-primary">Crear Programa</button>
+</form>
+  </main>
+
+<script>
+  document.getElementById("create-capacitation-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = {
+      titulo: document.getElementById("program-name").value,
+      descripcion: document.getElementById("program-description").value,
+      fecha_inicio: document.getElementById("program-date-start").value,
+      fecha_fin: document.getElementById("program-date-end").value,
+      instructor: document.getElementById("program-instructor").value,
+      cupo_maximo: parseInt(document.getElementById("program-capacity").value),
+      duracion_horas: parseInt(document.getElementById("program-duration").value),
+    };
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/cursos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error("Error al crear la capacitación");
+
+      alert("✅ Capacitación creada exitosamente");
+      this.reset(); // Limpiar el formulario
+    } catch (err) {
+      alert("❌ " + err.message);
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mis Postulaciones - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/mis.css" />
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_user.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_user.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()">Cerrar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Mis Postulaciones</h2>
+    <div id="loader" class="spinner"></div>
+    <div id="postulaciones" class="postulaciones-grid"></div>
+    <p id="mensaje" class="no-postulaciones"></p>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    async function cargarPostulaciones() {
+      const token = localStorage.getItem("token");
+      const mensaje = document.getElementById("mensaje");
+      const container = document.getElementById("postulaciones");
+      const loader = document.getElementById("loader");
+
+      mensaje.textContent = "";
+      container.innerHTML = "";
+      loader.style.display = "block";
+
+      if (!token) {
+        loader.style.display = "none";
+        mensaje.textContent = "⚠️ Debes iniciar sesión para ver tus postulaciones.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/ofertas/mis-postulaciones", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        loader.style.display = "none";
+
+        if (!res.ok) {
+          mensaje.textContent = data.error || "❌ No se pudo cargar la información.";
+          return;
+        }
+
+        const postulaciones = data.postulaciones || [];
+        if (postulaciones.length === 0) {
+          mensaje.textContent = "ℹ️ Aún no te has postulado a ninguna oferta laboral.";
+          return;
+        }
+
+        postulaciones.forEach(p => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${p.titulo}</h3>
+            <p><strong>Descripción:</strong> ${p.descripcion}</p>
+            <p><strong>Fecha de postulación:</strong> ${new Date(p.fecha_postulacion).toLocaleDateString()}</p>
+            <button class="btn-cancelar" onclick="cancelarPostulacion(${p.id_postulacion})">Cancelar Postulación</button>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        loader.style.display = "none";
+        mensaje.textContent = "❌ Error de red al obtener postulaciones.";
+      }
+    }
+
+    async function cancelarPostulacion(idPostulacion) {
+      const confirmacion = confirm("¿Estás seguro que deseas cancelar esta postulación?");
+      if (!confirmacion) return;
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await fetch(`http://127.0.0.1:5000/api/ofertas/postulaciones/${idPostulacion}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Postulación cancelada exitosamente.");
+          cargarPostulaciones(); // Recargar lista
+        } else {
+          alert(`❌ Error: ${data.error || "No se pudo cancelar la postulación."}`);
+        }
+
+      } catch (error) {
+        alert("❌ Error de red.");
+      }
+    }
+
+    window.onload = cargarPostulaciones;
+  </script>
+</body>
+</html>

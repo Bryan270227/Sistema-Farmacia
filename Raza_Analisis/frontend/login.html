@@ -1,0 +1,87 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar Sesión</title>
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <h1 class="logo">Farmacia Santa Martha</h1>
+      <ul class="nav-links">
+        <li><a href="main.html">Inicio</a></li>
+        <li><a href="capacitaciones.html">Capacitaciones</a></li>
+        <li><a href="publicacion.html">Oferta Laboral</a></li>
+        <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="login-container">
+    <div class="login-box">
+      <h2 class="login-title">Iniciar sesión</h2>
+      <form id="login-form" class="login-form">
+        <div class="input-group">
+          <label for="email">Correo electrónico o Usuario</label>
+          <input id="email" type="text" required placeholder="ejemplo@correo.com o usuario" />
+        </div>
+        <div class="input-group">
+          <label for="password">Contraseña</label>
+          <input id="password" type="password" required placeholder="********" />
+        </div>
+        <button type="submit" class="btn-login">Entrar</button>
+        <div id="login-error" class="error-message hidden" role="alert"></div>
+        <div class="create-account">
+          ¿No tienes una cuenta? <a href="signup.html" class="btn-create-account">Crear cuenta</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("login-form");
+    const errorBox = document.getElementById("login-error");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        errorBox.textContent = "Por favor, completa todos los campos.";
+        errorBox.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: email, password }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Error desconocido");
+        }
+
+        const data = await response.json();
+        localStorage.setItem("token", data.access_token);
+
+        if (data.role === "admin") {
+          window.location.href = "dashboard_admin.html";
+        } else {
+          window.location.href = "dashboard_user.html";
+        }
+      } catch (err) {
+        errorBox.textContent = err.message;
+        errorBox.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

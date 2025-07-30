@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Administrador - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><button onclick="logout()" class="btn-logout">Cerrar sesión</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Panel de control -->
+  <div class="content">
+    <h2>Panel del Administrador</h2>
+    <p>Gestiona todas las áreas del sistema con acceso rápido y visual.</p>
+
+    <div class="dashboard-grid">
+
+      <!-- Capacitaciones -->
+      <div class="card">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <h3>Capacitaciones</h3>
+        <button onclick="location.href='crear-capacitaciones.html'">➕ Crear</button>
+        <button onclick="location.href='listado-capacitaciones.html'">📋 Listado</button>
+        <button onclick="location.href='inscritos-capacitaciones.html'">👥 Inscritos</button>
+      </div>
+
+      <!-- Ofertas Laborales -->
+      <div class="card">
+        <i class="fas fa-briefcase"></i>
+        <h3>Ofertas Laborales</h3>
+        <button onclick="location.href='crear-ofertas-laborales.html'">➕ Crear</button>
+        <button onclick="location.href='listado-ofertas-laborales.html'">📋 Listado</button>
+        <button onclick="location.href='postulantes-ofertas-laborales.html'">🧑‍💼 Postulantes</button>
+      </div>
+
+      <!-- Reportes -->
+      <div class="card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Reportes</h3>
+        <button onclick="location.href='reportes.html#inscripciones'">📊 Reportes</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

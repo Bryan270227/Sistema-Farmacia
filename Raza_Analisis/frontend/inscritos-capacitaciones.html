@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscritos en Capacitaciones - Farmacia Santa Martha</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="dashboard_admin.html" class="logo">Farmacia Santa Martha</a>
+      <ul class="nav-links">
+        <li><a href="dashboard_admin.html">Inicio</a></li>
+        <li><a href="#" onclick="logout()" class="btn-login">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="modulo-contenido">
+    <h2>Inscritos en Capacitaciones</h2>
+    <p>Aquí puedes ver los usuarios inscritos en los programas de capacitación.</p>
+
+    <!-- Tabla de inscritos -->
+    <table class="data-table">
+    <thead>
+        <tr>
+        <th>Nombre del Usuario</th>
+        <th>Correo Electrónico</th>
+        <th>Programa</th>
+        <th>Fecha de Inscripción</th>
+        </tr>
+    </thead>
+    <tbody id="tabla-inscritos">
+        <!-- Aquí se cargarán dinámicamente -->
+    </tbody>
+    </table>
+  </main>
+
+<script>
+  async function cargarInscritos() {
+    const tbody = document.getElementById("tabla-inscritos");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/inscripciones");
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        tbody.innerHTML = `<tr><td colspan="4">Error al cargar inscritos</td></tr>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No hay inscritos actualmente.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      data.forEach(inscrito => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${inscrito.usuario}</td>
+          <td>${inscrito.email}</td>
+          <td>${inscrito.curso}</td>
+          <td>${inscrito.fecha_inscripcion}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+
+    } catch (error) {
+      console.error("Error al cargar inscritos:", error);
+      tbody.innerHTML = `<tr><td colspan="4">Error de red</td></tr>`;
+    }
+  }
+
+  // Llamar al cargar la página
+  window.addEventListener("DOMContentLoaded", cargarInscritos);
+</script>
+
+
+</body>
+</html>
